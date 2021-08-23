@@ -1,10 +1,11 @@
 """
-检测目录文件夹dirPath下的所有py文件中是否存在关键字word，以及返回所在的py文件
+检测指定目录下所有py文件中是否存在关键字word, 返回关键字所在的py文件
 """
 import os
 
-dirPath = "../GetPath/script"
-word = "jay"
+DIR_PATH = "./script"
+WORD = "jay"
+
 
 def get_word_path(dirPath, word):
     status = False
@@ -27,4 +28,4 @@ def get_word_path(dirPath, word):
 
 
 if __name__ == '__main__':
-    get_word_path(dirPath, word)
+    get_word_path(DIR_PATH, WORD)

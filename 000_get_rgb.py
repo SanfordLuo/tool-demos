@@ -1,7 +1,7 @@
 import numpy
 import PIL.Image
 
-im = PIL.Image.open('../CUT1/001.jpg')
+im = PIL.Image.open('./img/img_00.jpg')
 x = numpy.array(im)
 print(x)
 
