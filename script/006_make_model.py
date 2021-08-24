@@ -138,7 +138,7 @@ def main(num, n, nn):
 
 if __name__ == '__main__':
     READ_PATH_M = "./Model/3/1.jpg"
-    PATH_M = "./Model"
+    PATH_M = "../Model"
     x, hang, lie, tol = M_size()
     MODEL, nn = main(3, 1, 60)
     MODEL = MODEL.tolist()

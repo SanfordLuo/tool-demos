@@ -3,7 +3,7 @@
 """
 import os
 
-DIR_PATH = "./script"
+DIR_PATH = "../test"
 WORD = "jay"
 
 

@@ -1,6 +1,6 @@
 ### demo说明
 
-000_get_rgb: 获取图片的rgb数值
+000_get_ryg: 图片降维处理,获取RYG值
 
 001_get_word_path: 检测指定目录下所有py文件中是否存在关键字word, 返回关键字所在的py文件
 
