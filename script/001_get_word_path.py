@@ -3,7 +3,8 @@
 """
 import os
 
-DIR_PATH = "../test"
+PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DIR_PATH = "{}/test".format(PROJECT_PATH)
 WORD = "jay"
 
 

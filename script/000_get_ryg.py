@@ -1,10 +1,12 @@
 """
 图片降维处理,获取RYG值
 """
+import os
 import numpy
 from PIL import Image
 
-IMG_NUMPY = numpy.array(Image.open('../img/img_000.jpg'))
+PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+IMG_NUMPY = numpy.array(Image.open("{}/img/img_000.jpg".format(PROJECT_PATH)))
 
 
 def height_width_pixel():
