@@ -13,7 +13,6 @@
 │   ├── kafka_consumer.py    // kafka消费者
 │   ├── kafka_producer.py    // kafka生产者
 │   ├── log_handler.py    // 日志处理器
-│   ├── make_img_model.py    // 根据像素点获取图片中的数字模板
 │   ├── singleton.py    // 单例
 │   └── thread_process.py.py    // 线程池 进程池
 ├── test    // 测试文件目录
