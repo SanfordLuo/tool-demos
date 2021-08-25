@@ -8,7 +8,7 @@ import numpy
 
 PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 IMG_NAME_COLOR = "img_001.jpg"
-IMG_NAME_RAINBOW = "img_001.jpg"
+IMG_NAME_RAINBOW = "rainbow.png"
 
 
 class HsvBaseSpace:
@@ -158,5 +158,5 @@ def split_rainbow():
 
 
 if __name__ == '__main__':
-    print(distinguish_color())
-    # split_rainbow()
+    # print(distinguish_color())
+    split_rainbow()
