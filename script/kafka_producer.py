@@ -15,23 +15,27 @@ kafka-console-producer --topic sanford --broker-list localhost:9092
 jps
 """
 import time
+import json
 from kafka import KafkaProducer
 
 topic = 'sanford'
-bootstrap_servers = ['localhost:9092']
+bootstrap_servers = 'localhost:9092'
 
 
 def test_producer():
-    producer = KafkaProducer(bootstrap_servers=bootstrap_servers)
-    print('===== 生产者 begin =====')
-    for i in range(1000):
-        msg = "msg: %d" % i
-        producer.send(topic, msg.encode())
-        print(msg)
-        time.sleep(0.5)
+    producer = KafkaProducer(bootstrap_servers=bootstrap_servers,
+                             key_serializer=lambda k: json.dumps(k).encode(),
+                             value_serializer=lambda m: json.dumps(m).encode())
 
-    producer.close()
-    print('===== 生产者 end =====')
+    data = {'name': 'jay', 'timestamp': int(time.time() * 1000)}
+
+    try:
+        future = producer.send(topic=topic, value=data)
+        future.get(timeout=10)
+    except Exception as e:
+        print('生产者发送失败:{0}'.format(e))
+    else:
+        print('生产者发送成功')
 
 
 if __name__ == '__main__':
