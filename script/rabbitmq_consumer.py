@@ -17,12 +17,14 @@ ExchangeType: 交换机类型决定了路由消息的行为,RabbitMQ 中有三�
 Message Queue: 消息队列,用于存储还未被消费者消费的消息,由 Header 和 body 组成.
         Header 是由生产者添加的各种属性的集合,包括 Message 是否被持久化、优先级是多少、由哪个 Message Queue 接收等,body 是真正需要发送的数据内容.
 BindingKey: 绑定关键字,将一个特定的 Exchange 和一个特定的 Queue 绑定起来.
+对于Message的routing_key是有限制的，不能使任意的。格式是以点号.分割的字符表, *(星号)代表任意一个单词; #(hash)0个或者多个单词
 """
 import pika
 import json
 import time
 import random
 import datetime
+import sys
 
 
 class TestConsumer(object):
@@ -69,7 +71,7 @@ class TestConsumer(object):
         # 声明队列 队列持久化: durable=True, 服务重启后队列依然存在
         channel.queue_declare(queue='queue_00', durable=True)
 
-        # 公平分发 prefetch_count=1如果消费者中有一条消息没处理完就不会继续给这个消费者继续发消息
+        # 公平分发(没有这行时为轮询分发) prefetch_count=1如果消费者中有一条消息没处理完就不会继续给这个消费者继续发消息
         channel.basic_qos(prefetch_count=1)
 
         # auto_ack=True 自动确认已经消费成功
@@ -105,6 +107,116 @@ class TestConsumer(object):
 
         channel.start_consuming()
 
+    def consumer_02(self):
+        """
+        路由模式(direct)
+        """
+        credentials = pika.PlainCredentials(username=self.username, password=self.password)
+        params = pika.ConnectionParameters(host=self.host,
+                                           port=self.port,
+                                           virtual_host=self.virtual_host,
+                                           credentials=credentials)
+        connection = pika.BlockingConnection(params)
+        channel = connection.channel()
+
+        # 声明交换机指定类型 交换机持久化: durable=True, 服务重启后交换机依然存在
+        channel.exchange_declare(exchange='exchange_02', exchange_type='direct', durable=True)
+
+        # 声明队列, queue为空字符串时会创建唯一的队列名. exclusive=True, 仅允许当前的连接访问
+        result = channel.queue_declare(queue='', exclusive=True)
+        queue_name = result.method.queue
+
+        # 通过路由键将队列和交换器绑定, 此模式需要routing_key进行消费
+        channel.queue_bind(exchange='exchange_02', queue=queue_name, routing_key='routing_key_02')
+
+        channel.basic_consume(queue=queue_name,
+                              on_message_callback=self.callback_00)
+
+        channel.start_consuming()
+
+    def consumer_03_0(self):
+        """
+        主题模式(topic),实现分发 routing_key.msg_type_03.0
+        """
+        credentials = pika.PlainCredentials(username=self.username, password=self.password)
+        params = pika.ConnectionParameters(host=self.host,
+                                           port=self.port,
+                                           virtual_host=self.virtual_host,
+                                           credentials=credentials)
+        connection = pika.BlockingConnection(params)
+        channel = connection.channel()
+
+        # 声明交换机指定类型 交换机持久化: durable=True, 服务重启后交换机依然存在
+        channel.exchange_declare(exchange='exchange_03', exchange_type='topic', durable=True)
+
+        # 声明队列, queue为空字符串时会创建唯一的队列名. exclusive=True, 仅允许当前的连接访问
+        result = channel.queue_declare(queue='', exclusive=True)
+        queue_name = result.method.queue
+
+        # 通过路由键将队列和交换器绑定, 此模式需要routing_key进行消费
+        channel.queue_bind(exchange='exchange_03', queue=queue_name, routing_key='routing_key.msg_type_03.0')
+
+        channel.basic_consume(queue=queue_name,
+                              on_message_callback=self.callback_00)
+
+        channel.start_consuming()
+
+    def consumer_03_1(self):
+        """
+        主题模式(topic),实现分发 routing_key.msg_type_03.1
+        """
+        credentials = pika.PlainCredentials(username=self.username, password=self.password)
+        params = pika.ConnectionParameters(host=self.host,
+                                           port=self.port,
+                                           virtual_host=self.virtual_host,
+                                           credentials=credentials)
+        connection = pika.BlockingConnection(params)
+        channel = connection.channel()
+
+        # 声明交换机指定类型 交换机持久化: durable=True, 服务重启后交换机依然存在
+        channel.exchange_declare(exchange='exchange_03', exchange_type='topic', durable=True)
+
+        # 声明队列, queue为空字符串时会创建唯一的队列名. exclusive=True, 仅允许当前的连接访问
+        result = channel.queue_declare(queue='', exclusive=True)
+        queue_name = result.method.queue
+
+        # 通过路由键将队列和交换器绑定, 此模式需要routing_key进行消费
+        channel.queue_bind(exchange='exchange_03', queue=queue_name, routing_key='routing_key.msg_type_03.1')
+
+        channel.basic_consume(queue=queue_name,
+                              on_message_callback=self.callback_00)
+
+        channel.start_consuming()
+
+    def consumer_03_2(self):
+        """
+        主题模式(topic),实现分发 routing_key.msg_type_03.#
+        * (星号) 代表任意 一个单词
+        # (hash) 0个或者多个单词
+        """
+        credentials = pika.PlainCredentials(username=self.username, password=self.password)
+        params = pika.ConnectionParameters(host=self.host,
+                                           port=self.port,
+                                           virtual_host=self.virtual_host,
+                                           credentials=credentials)
+        connection = pika.BlockingConnection(params)
+        channel = connection.channel()
+
+        # 声明交换机指定类型 交换机持久化: durable=True, 服务重启后交换机依然存在
+        channel.exchange_declare(exchange='exchange_03', exchange_type='topic', durable=True)
+
+        # 声明队列, queue为空字符串时会创建唯一的队列名. exclusive=True, 仅允许当前的连接访问
+        result = channel.queue_declare(queue='', exclusive=True)
+        queue_name = result.method.queue
+
+        # 通过路由键将队列和交换器绑定, 此模式需要routing_key进行消费
+        channel.queue_bind(exchange='exchange_03', queue=queue_name, routing_key='routing_key.msg_type_03.#')
+
+        channel.basic_consume(queue=queue_name,
+                              on_message_callback=self.callback_00)
+
+        channel.start_consuming()
+
 
 if __name__ == '__main__':
     test_consumer = TestConsumer()
@@ -113,4 +225,15 @@ if __name__ == '__main__':
     # test_consumer.consumer_00()
 
     # 发布/订阅模式(fanout)
-    test_consumer.consumer_01()
+    # test_consumer.consumer_01()
+
+    # 路由模式(direct)
+    # test_consumer.consumer_02()
+
+    # 主题模式(topic),实现分发
+    if sys.argv[1] == '0':
+        test_consumer.consumer_03_0()
+    elif sys.argv[1] == '1':
+        test_consumer.consumer_03_1()
+    elif sys.argv[1] == '2':
+        test_consumer.consumer_03_2()

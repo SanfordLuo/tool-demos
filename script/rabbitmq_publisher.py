@@ -17,11 +17,13 @@ ExchangeType: 交换机类型决定了路由消息的行为,RabbitMQ 中有三�
 Message Queue: 消息队列,用于存储还未被消费者消费的消息,由 Header 和 body 组成.
         Header 是由生产者添加的各种属性的集合,包括 Message 是否被持久化、优先级是多少、由哪个 Message Queue 接收等,body 是真正需要发送的数据内容.
 BindingKey: 绑定关键字,将一个特定的 Exchange 和一个特定的 Queue 绑定起来.
+对于Message的routing_key是有限制的，不能使任意的。格式是以点号.分割的字符表, *(星号)代表任意一个单词; #(hash)0个或者多个单词
 """
 import pika
 import json
 import datetime
 import time
+import random
 
 
 class TestPublisher(object):
@@ -93,6 +95,58 @@ class TestPublisher(object):
 
         connection.close()
 
+    def publisher_02(self, msg_type, data):
+        """
+        路由模式(direct)
+        """
+        credentials = pika.PlainCredentials(username=self.username, password=self.password)
+        params = pika.ConnectionParameters(host=self.host,
+                                           port=self.port,
+                                           virtual_host=self.virtual_host,
+                                           credentials=credentials)
+        connection = pika.BlockingConnection(params)
+        channel = connection.channel()
+
+        # 声明交换机指定类型 交换机持久化: durable=True, 服务重启后交换机依然存在
+        channel.exchange_declare(exchange='exchange_02', exchange_type='direct', durable=True)
+
+        properties = pika.BasicProperties(headers={'msg-type': msg_type},
+                                          delivery_mode=2)
+
+        # 指定routing_key
+        channel.basic_publish(exchange='exchange_02',
+                              routing_key='routing_key_02',
+                              body=json.dumps(data),
+                              properties=properties)
+
+        connection.close()
+
+    def publisher_03(self, msg_type, data):
+        """
+        主题模式(topic),实现分发,
+        """
+        credentials = pika.PlainCredentials(username=self.username, password=self.password)
+        params = pika.ConnectionParameters(host=self.host,
+                                           port=self.port,
+                                           virtual_host=self.virtual_host,
+                                           credentials=credentials)
+        connection = pika.BlockingConnection(params)
+        channel = connection.channel()
+
+        # 声明交换机指定类型 交换机持久化: durable=True, 服务重启后交换机依然存在
+        channel.exchange_declare(exchange='exchange_03', exchange_type='topic', durable=True)
+
+        properties = pika.BasicProperties(headers={'msg-type': msg_type},
+                                          delivery_mode=2)
+
+        # 拼接routing_key
+        channel.basic_publish(exchange='exchange_03',
+                              routing_key='routing_key.{0}'.format(msg_type),
+                              body=json.dumps(data),
+                              properties=properties)
+
+        connection.close()
+
 
 if __name__ == '__main__':
     test_publisher = TestPublisher()
@@ -105,8 +159,23 @@ if __name__ == '__main__':
     #     test_publisher.publisher_00(msg_type_00, data_00)
 
     # 发布/订阅模式(fanout)
-    msg_type_01 = 'msg_type_01'
+    # msg_type_01 = 'msg_type_01'
+    # for i in range(20):
+    #     time.sleep(1)
+    #     data_01 = {'id': i, 'name': 'jay', 'send_time': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+    #     test_publisher.publisher_01(msg_type_01, data_01)
+
+    # 路由模式(direct)
+    # msg_type_02 = 'msg_type_02'
+    # for i in range(20):
+    #     time.sleep(1)
+    #     data_02 = {'id': i, 'name': 'jay', 'send_time': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+    #     test_publisher.publisher_02(msg_type_02, data_02)
+
+    # 主题模式(topic),实现分发
+    msg_type_list = ['msg_type_03.0', 'msg_type_03.1', 'msg_type_03.2']
     for i in range(20):
+        msg_type_03 = random.choice(msg_type_list)
         time.sleep(1)
-        data_01 = {'id': i, 'name': 'jay', 'send_time': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-        test_publisher.publisher_01(msg_type_01, data_01)
+        data_03 = {'id': i, 'name': 'jay', 'send_time': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+        test_publisher.publisher_03(msg_type_03, data_03)
