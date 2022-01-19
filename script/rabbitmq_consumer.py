@@ -97,7 +97,7 @@ class TestConsumer(object):
         result = channel.queue_declare(queue='', exclusive=True)
         queue_name = result.method.queue
 
-        # 通过路由键将队列和交换器绑定
+        # 通过路由键将队列和交换器绑定, 此模式不需要routing_key进行消费 可以默认为None
         channel.queue_bind(exchange='exchange_01', queue=queue_name)
 
         channel.basic_consume(queue=queue_name,

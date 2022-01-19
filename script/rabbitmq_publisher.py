@@ -85,6 +85,7 @@ class TestPublisher(object):
         properties = pika.BasicProperties(headers={'msg-type': msg_type},
                                           delivery_mode=2)
 
+        # 此模式不需要routing_key进行消费 可以设置为''
         channel.basic_publish(exchange='exchange_01',
                               routing_key='',
                               body=json.dumps(data),
