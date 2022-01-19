@@ -78,7 +78,39 @@ class TestConsumer(object):
 
         channel.start_consuming()
 
+    def consumer_01(self):
+        """
+        发布/订阅模式(fanout)
+        """
+        credentials = pika.PlainCredentials(username=self.username, password=self.password)
+        params = pika.ConnectionParameters(host=self.host,
+                                           port=self.port,
+                                           virtual_host=self.virtual_host,
+                                           credentials=credentials)
+        connection = pika.BlockingConnection(params)
+        channel = connection.channel()
+
+        # 声明交换机指定类型 交换机持久化: durable=True, 服务重启后交换机依然存在
+        channel.exchange_declare(exchange='exchange_01', exchange_type='fanout', durable=True)
+
+        # 声明队列, queue为空字符串时会创建唯一的队列名. exclusive=True, 仅允许当前的连接访问
+        result = channel.queue_declare(queue='', exclusive=True)
+        queue_name = result.method.queue
+
+        # 通过路由键将队列和交换器绑定
+        channel.queue_bind(exchange='exchange_01', queue=queue_name)
+
+        channel.basic_consume(queue=queue_name,
+                              on_message_callback=self.callback_00)
+
+        channel.start_consuming()
+
 
 if __name__ == '__main__':
     test_consumer = TestConsumer()
-    test_consumer.consumer_00()
+
+    # 简单模式/工作队列模式
+    # test_consumer.consumer_00()
+
+    # 发布/订阅模式(fanout)
+    test_consumer.consumer_01()

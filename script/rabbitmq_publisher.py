@@ -67,12 +67,45 @@ class TestPublisher(object):
 
         connection.close()
 
+    def publisher_01(self, msg_type, data):
+        """
+        发布/订阅模式(fanout)
+        """
+        credentials = pika.PlainCredentials(username=self.username, password=self.password)
+        params = pika.ConnectionParameters(host=self.host,
+                                           port=self.port,
+                                           virtual_host=self.virtual_host,
+                                           credentials=credentials)
+        connection = pika.BlockingConnection(params)
+        channel = connection.channel()
+
+        # 声明交换机指定类型 交换机持久化: durable=True, 服务重启后交换机依然存在
+        channel.exchange_declare(exchange='exchange_01', exchange_type='fanout', durable=True)
+
+        properties = pika.BasicProperties(headers={'msg-type': msg_type},
+                                          delivery_mode=2)
+
+        channel.basic_publish(exchange='exchange_01',
+                              routing_key='',
+                              body=json.dumps(data),
+                              properties=properties)
+
+        connection.close()
+
 
 if __name__ == '__main__':
     test_publisher = TestPublisher()
 
-    msg_type_00 = 'msg_type_00'
+    # 简单模式/工作队列模式
+    # msg_type_00 = 'msg_type_00'
+    # for i in range(20):
+    #     time.sleep(1)
+    #     data_00 = {'id': i, 'name': 'jay', 'send_time': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+    #     test_publisher.publisher_00(msg_type_00, data_00)
+
+    # 发布/订阅模式(fanout)
+    msg_type_01 = 'msg_type_01'
     for i in range(20):
         time.sleep(1)
-        data_00 = {'id': i, 'name': 'jay', 'send_time': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-        test_publisher.publisher_00(msg_type_00, data_00)
+        data_01 = {'id': i, 'name': 'jay', 'send_time': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+        test_publisher.publisher_01(msg_type_01, data_01)
