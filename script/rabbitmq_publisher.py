@@ -1,11 +1,13 @@
 """
 rabbitmq 生产者demo
-1.单生产单消费模型：即完成基本的一对一消息转发。
-2.消息分发模型：多个收听者监听一个队列。
-3.fanout消息订阅模式：生产者将消息发送到Exchange，Exchange再转发到与之绑定的Queue中，每个消费者再到自己的Queue中取消息。
-4.direct路由模式：此时生产者发送消息时需要指定RoutingKey，即路由Key，Exchange接收到消息时转发到与RoutingKey相匹配的队列中。
-5.topic匹配模式：更细致的分组，允许在RoutingKey中使用匹配符。
-6.RPC远程过程调用：客户端与服务器之间是完全解耦的，即两端既是消息的发送者也是接受者。
+1.简单模式: 最简单的一对一模式
+2.工作队列模式: 一对多模式,一个生产者多个消费者,每条消息仅能被其中的一个消费者消费
+    轮询分发: 将消息轮流发给每个消费者,一个消费者处理完才会发送下一个。例: A消费第1,4,7..条消息, B消费第2,5,8..条消息, C消费3,6,9...条消息
+    公平分发: 只要有消费者处理完就会把下一条发给空闲的消费者
+3.发布/订阅模式(fanout): 生产者将消息发送给broker,由交换机将消息转发到绑定此交换机的每个队列,每个绑定交换机的队列都将接收到消息。消费者监听自己的队列并进行消费
+4.路由模式(direct): 生产者将消息发送给 broker，由交换机根据 routing_key 分发到不同的消息队列，然后消费者同样根据 routing_key 来消费对应队列上的消息。
+5.主题模式(topic): 主题模式应该算是路由模式的一种,routing_key支持正则表达式
+6.RPC模式：通过消息队列来实现 RPC 功能，客户端发送消息到消费队列，消息内容其实就是服务端执行需要的参数，服务端消费消息内容，执行程序，然后将结果返回给客户端
 
 channel： 信道是生产者，消费者和 RabbitMQ 通信的渠道，是建立在 TCP 连接上的虚拟连接。一个 TCP 连接上可以建立成百上千个信道，通过这种方式，可以减少系统开销，提高性能。
 Broker： 接收客户端连接，实现 AMQP 协议的消息队列和路由功能的进程。
@@ -18,32 +20,56 @@ BindingKey： 绑定关键字，将一个特定的 Exchange 和一个特定的 Q
 """
 import pika
 import json
-import time
+import datetime
 
 
-def test_publish_01(data):
-    credentials = pika.PlainCredentials(username='sanford', password='123456')
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost',
-                                                                   port=5672,
-                                                                   virtual_host='sanford_host',
-                                                                   credentials=credentials))
+class TestPublisher(object):
 
-    channel = connection.channel()
-    channel.exchange_declare(exchange='sanford_exchange',
-                             durable=True,
-                             exchange_type='topic')
+    def __init__(self):
+        self.username = 'sanford'
+        self.password = '123456'
+        self.host = 'localhost'
+        self.port = 5672
+        self.virtual_host = 'sanford_host'
 
-    channel.queue_declare(queue='sanford_topic_queue', durable=True)
+    def publisher_00(self, msg_type, data):
+        """
+        简单模式
+        """
+        # 创建连接时的登录凭证
+        credentials = pika.PlainCredentials(username=self.username, password=self.password)
 
-    channel.basic_publish(exchange='sanford_exchange',
-                          routing_key='sanford_routing_key',
-                          body=json.dumps(data),
-                          properties=pika.BasicProperties(headers={'msg-type': 'sanford_test'}))
+        # 参数设置
+        params = pika.ConnectionParameters(host=self.host,
+                                           port=self.port,
+                                           virtual_host=self.virtual_host,
+                                           credentials=credentials)
 
-    connection.close()
+        # 创建阻塞式连接
+        connection = pika.BlockingConnection(params)
+
+        # 创建信道
+        channel = connection.channel()
+
+        # 声明队列 队列持久化: durable=True, 服务重启后队列依然存在
+        channel.queue_declare(queue='queue_00', durable=True)
+
+        # 消息属性设置 消息持久化: delivery_mode=2
+        properties = pika.BasicProperties(headers={'msg-type': msg_type},
+                                          delivery_mode=2)
+
+        # 简单模式时routing_key为queue
+        channel.basic_publish(exchange='',
+                              routing_key='queue_00',
+                              body=json.dumps(data),
+                              properties=properties)
+
+        connection.close()
 
 
 if __name__ == '__main__':
-    data = {'name': 'jay', 'timestamp': int(time.time() * 1000)}
+    test_publisher = TestPublisher()
 
-    test_publish_01(data)
+    msg_type_00 = 'msg_type_00'
+    data_00 = {'name': 'jay', 'time': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+    test_publisher.publisher_00(msg_type_00, data_00)
