@@ -1,6 +1,7 @@
 import pika
 import uuid
 import json
+import random
 
 
 class BubbleSortRpcClient(object):
@@ -66,8 +67,14 @@ class BubbleSortRpcClient(object):
 if __name__ == '__main__':
     bubble_sort = BubbleSortRpcClient()
 
-    ls = [1, 22, 3, 7, 4, 77, 34, 66, 5, 4, 8, 15]
-    # ls = '2223'
+    ls_list = [
+        [1, 22, 3, 7, 4, 77, 34, 66, 5, 4, 8, 15],
+        '2223, 35, 44',
+        {2: 2, 3: 3},
+        [4, 7, 3, 9],
+        [3, 3, 9, 2]
+    ]
+    idx = random.randint(0, 4)
     print("客户端开始发起请求......")
-    response = bubble_sort.call(ls)
+    response = bubble_sort.call(ls_list[idx])
     print("服务端计算结果 response: {0}".format(response))
