@@ -13,8 +13,14 @@
 │   ├── kafka_consumer.py    // kafka消费者
 │   ├── kafka_producer.py    // kafka生产者
 │   ├── log_handler.py    // 日志处理器
+│   ├── pressure_by_threading.py    // 接口压力测试
+│   ├── rabbitmq_consumer.py    // rabbitmq消费者
+│   ├── rabbitmq_publisher.py    // rabbitmq生产者
+│   ├── rabbitmq_rpc_client.py    // rabbitmq rpc 客户端
+│   ├── rabbitmq_rpc_service.py    // rabbitmq rpc 服务端
 │   ├── singleton.py    // 单例
-│   └── thread_process.py.py    // 线程池 进程池
+│   ├── thread_process.py    // 线程池 进程池
+│   └── zixing.py    // 自省函数
 ├── test    // 测试文件目录
 └── tree.txt    // 项目结构 tree > tree.txt 
 ```
