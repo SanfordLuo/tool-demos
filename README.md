@@ -2,11 +2,16 @@
 ```
 .
 ├── README.md
+├── celery_app  // celery应用
+│   ├── __init__.py
+│   ├── config.py
+│   └── tasks.py
 ├── img    // 测试图片目录
 ├── log    // 日志存放目录
 ├── requirements.txt
 ├── script    // 脚本目录
 │   ├── __init__.py
+│   ├── celery_run.py  // celery任务测试脚本
 │   ├── get_ryg.py    // 图片降维处理,获取RYG值
 │   ├── get_word_path.py    // 查找关键字并返回所在文件
 │   ├── hsv_color.py    // hsv区分颜色应用
