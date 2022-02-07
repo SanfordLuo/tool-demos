@@ -7,3 +7,4 @@ pika==1.2.0
 Pillow==9.0.0
 celery==5.2.3
 kombu==5.2.3
+zerorpc==0.6.3
