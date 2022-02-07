@@ -23,6 +23,8 @@
 │   ├── rabbitmq_publisher.py    // rabbitmq生产者
 │   ├── rabbitmq_rpc_client.py    // rabbitmq rpc 客户端
 │   ├── rabbitmq_rpc_service.py    // rabbitmq rpc 服务端
+│   ├── rpc_client.py   // xmlrpc和zerorpc实现简单的rpc客户端
+│   ├── rpc_service.py  // xmlrpc和zerorpc实现简单的rpc服务端
 │   ├── singleton.py    // 单例
 │   ├── thread_process.py    // 线程池 进程池
 │   └── zixing.py    // 自省函数
