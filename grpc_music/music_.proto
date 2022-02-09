@@ -1,0 +1,38 @@
+// pip install grpcio grpcio-tools protobuf
+// python -m grpc_tools.protoc --python_out=. --grpc_python_out=. -I. music.proto
+
+syntax = "proto3";
+
+package music;
+
+service Music {
+  //  A simple RPC: 简单RPC, 客户端使用存根发送请求到服务器并等待响应返回
+  rpc get_music(name_req) returns (music_resp) {}
+
+  //  A server-to-client streaming RPC: 客户端一次请求, 服务端流式响应
+  rpc ranking_music(limit_req) returns (stream ranking_resp) {}
+
+  //  A client-to-server streaming RPC: 客户端流式请求, 客户端一次响应
+
+  //  A Bidirectional streaming RPC: 客户端流式请求, 服务端流式响应
+}
+
+message name_req {
+  string name = 1;
+}
+
+message music_resp {
+  string name = 1;
+  string singer = 2;
+  int32 ranking = 3;
+  string message = 4;
+}
+
+message limit_req {
+  int32 limit = 1;
+}
+
+message ranking_resp {
+  music_resp data = 1;
+}
+
