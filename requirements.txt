@@ -2,9 +2,11 @@ kafka_python==2.0.2
 matplotlib==3.4.3
 numpy==1.21.2
 opencv-python==4.5.3.56
-requests==2.25.1
+requests==2.27.1
 pika==1.2.0
 Pillow==9.0.0
 celery==5.2.3
 kombu==5.2.3
 zerorpc==0.6.3
+mysqlclient==2.1.0
+redis==4.1.4
