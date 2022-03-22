@@ -10,3 +10,4 @@ kombu==5.2.3
 zerorpc==0.6.3
 mysqlclient==2.1.0
 redis==4.1.4
+pydantic==1.9.0
