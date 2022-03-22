@@ -4,7 +4,7 @@ numpy==1.21.2
 opencv-python==4.5.3.56
 requests==2.27.1
 pika==1.2.0
-Pillow==9.0.0
+Pillow==9.0.1
 celery==5.2.3
 kombu==5.2.3
 zerorpc==0.6.3
