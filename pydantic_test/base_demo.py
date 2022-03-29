@@ -6,7 +6,8 @@ from datetime import datetime
 class FriendModel(BaseModel):
     friend_name: str = 'oker'
     friend_age: int
-    # Optional 可选参数，默认None，也可指定默认
+    # Optional 可选参数，默认None，也可指定默认，
+    # Optional[int] 等价于 Union[int, None]，既可以传指定的类型 int，也可以传 None
     # add_time: Optional[str]
     add_time: Optional[str] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
@@ -80,7 +81,8 @@ def test_02():
     try:
         data = UserModel(**err_params)
     except ValidationError as e:
-        print(e.json())
+        # print(e.json())
+        print(e.errors())
     else:
         print(data.dict())
 
