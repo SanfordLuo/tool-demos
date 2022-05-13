@@ -6,7 +6,7 @@ import json
 import threading
 from script import log_handler
 
-logger = log_handler.Logger('pressure_by_threading.log')
+logger = log_handler.Logger('pressure_by_threading.log').logger
 
 # 用户token字典
 tokens = {'111': '111', '222': '222', '333': '333', '444': '444'}

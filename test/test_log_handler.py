@@ -1,7 +1,7 @@
 import traceback
 from script import log_handler
 
-logger = log_handler.Logger('test_log_handler.log')
+logger = log_handler.Logger('test_log_handler.log').logger
 
 
 def test_00():
