@@ -18,8 +18,8 @@ jps
 import json
 from kafka import KafkaConsumer
 
-topic = 'sanford'
-group_id = 'demo_python'
+topic = 'KAFKA_COURSE_TOPIC'
+group_id = 'sanford'
 bootstrap_servers = 'localhost:9092'
 # auto_offset_reset = 'earliest'  # 从未消费的开始消费
 auto_offset_reset = 'latest'  # 从最新生产的开始的消费
@@ -33,7 +33,8 @@ def test_consumer():
             bootstrap_servers=bootstrap_servers,
             auto_offset_reset=auto_offset_reset)
         for msg in consumer:
-            print('data:{0}'.format(json.loads(msg.value)))
+            print(msg.value)
+            # print('data:{0}'.format(json.loads(msg.value)))
             consumer.commit()
     except Exception as e:
         print('消费者接收失败:{0}'.format(e))
