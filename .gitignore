@@ -1,5 +1,6 @@
 .idea
 .DS_Store
 /tree.txt
-/log/
+/logs/
 /celerybeat-schedule.db
+__pycache__

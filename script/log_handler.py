@@ -5,8 +5,8 @@ import os
 import flask
 import logging
 from logging.handlers import TimedRotatingFileHandler
-from config import config
-
+# from config import config
+path = "D:\\CodePy\\tool-demos"
 
 class LogFormatter(logging.Formatter):
 
@@ -28,12 +28,10 @@ class Logger(object):
     def __init__(self, filename=None):
         if not filename:
             filename = 'main.log'
-        if os.path.exists(config.BASE_PATH):
-            if not os.path.exists(f'{config.BASE_PATH}/logs'):
-                os.mkdir(f'{config.BASE_PATH}/logs')
-            if not os.path.exists(f'{config.BASE_PATH}/logs/{config.PROJECT_NAME}'):
-                os.mkdir(f'{config.BASE_PATH}/logs/{config.PROJECT_NAME}')
-            filename = f'{config.BASE_PATH}/logs/{config.PROJECT_NAME}/{filename}'
+        if os.path.exists(path):
+            if not os.path.exists(f'{path}/logs'):
+                os.mkdir(f'{path}/logs')
+            filename = f'{path}/logs/{filename}'
         else:
             project_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
             if not os.path.exists(f'{project_path}/logs'):
