@@ -1,6 +1,6 @@
 kafka_python==2.0.2
 matplotlib==3.4.3
-numpy==1.21.2
+numpy==1.22.0
 opencv-python==4.5.3.56
 requests==2.27.1
 pika==1.2.0
