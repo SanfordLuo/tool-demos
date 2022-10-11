@@ -9,6 +9,8 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Boolean, DECIMAL, Enum, Date, DateTime, Time, String, Text, Index
 from datetime import datetime
 from utils.util_mysql import SqlalchemyShell
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+import asyncio
 
 set_logger_config('test_sqlalchemy')
 logger = logging.getLogger('test_sqlalchemy')
@@ -177,8 +179,24 @@ def test_with(engine):
         print(111)
 
 
+async def test_async():
+    # engine = create_engine('dialect+driver://username:password@host:port/database')
+    """
+    echo=False: 默认False, 为True时候会把sql语句打印出来
+    pool_size=5: 连接池的大小, 默认为5个, 0表示连接数无限制。初始化时并不产生连接，当并发量上去时连接才会慢慢增多直到最高连接数。
+    pool_recycle=3600: 在指定秒数内，没有任何动作的连接会被回收掉, 默认-1时mysql设置的等待时间连接8小时无动作时断开。
+    pool_pre_ping: 探针检测, 为True时出现异常则连接全部回收，重新根据并发量建立连接
+    """
+    async_engine = create_async_engine('mysql+aiomysql://root:jayae.22378@localhost:3306/sanford-test?charset=utf8mb4')
+    Session = sessionmaker(bind=async_engine, class_=AsyncSession)
+    session = Session()
+    ret = await session.execute("select * from user where id = :id", {"id": 1})
+    for ii in ret:
+        print(ii.username)
+
+
 if __name__ == '__main__':
-    engine = init_engine()
+    # engine = init_engine()
     # create_table(engine)
     # test_insert(engine)
     # test_update(engine)
@@ -186,4 +204,7 @@ if __name__ == '__main__':
     # test_delete(engine)
     # test_shiwu(engine)
     # test_aa(engine)
-    test_with(engine)
+    # test_with(engine)
+
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(test_async())
