@@ -11,6 +11,25 @@ from DBUtils.PooledDB import PooledDB
 logger = logging.getLogger('server')
 
 
+class SqlalchemyShell(object):
+    """
+    Sqlalchemy 的上下文管理器
+    """
+
+    def __init__(self, db_session):
+        self.db_session = db_session
+
+    def __enter__(self, *args):
+        return self.db_session
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        try:
+            self.db_session.commit()
+        except Exception as e:
+            logger.info(e)
+            self.db_session.rollback()
+
+
 class MysqlShell():
     """
     mysql上下文管理器

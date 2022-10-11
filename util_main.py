@@ -2,8 +2,8 @@ import logging
 from utils.util_logger import set_logger_config
 from utils.util_mysql import MysqlShell, MysqlClient
 
-set_logger_config('test')
-logger = logging.getLogger('test')
+set_logger_config('util_main')
+logger = logging.getLogger('util_main')
 
 
 def test_log():
