@@ -24,8 +24,8 @@ import json
 import random
 from kafka import KafkaProducer
 
-topic = 'topic_minicourse_clone'
-bootstrap_servers = 'localhost:9092'
+topic = 'databus'
+bootstrap_servers = '10.60.0.163:9092'
 
 
 def test_producer(teacher_id):
@@ -34,14 +34,32 @@ def test_producer(teacher_id):
                              value_serializer=lambda m: json.dumps(m).encode())
 
     data = {
-        "create_time": "2022-06-16 17:30:30",
-        "request_id": 'test_' + str(int(time.time() * 1000)),
-        "data": {
-            "minicourse_id": 902936,
-            "teacher_ids": [
-                teacher_id
-            ]
-        }
+        "subject_id": 777,
+        "intelligent": 888,
+        "type": 1,
+        "reqId": "new_20220914_04",
+        "exerciseSource": 7,
+        "resourceId": 560968,
+        "key": "560968",
+        "studentExerciseList": [
+            {
+                "id": 1268011,
+                "studentId": 82952857479,
+                "classId": 78790,
+                "year": 2021,
+                "result": "1",
+                "correctorRole": "student",
+                "question_id": 16994302,
+                "parent_id": 0,
+                "minicourse_id": 334823,
+                "node_index": 4,
+                "content_index": 2,
+                "history_result": None,
+                "correctStatus": None
+            }
+        ],
+        "kid": -1,
+        "ktype": -1
     }
 
     try:
@@ -55,4 +73,3 @@ def test_producer(teacher_id):
 
 if __name__ == '__main__':
     test_producer(1)
-
